@@ -5,14 +5,19 @@ on:
     branches: [main]
     tags: ["v*"]
   pull_request:
+    branches: [main]
 
 jobs:
+  # The rules touch the filesystem (the addons-path resolver), so the OS matters:
+  # path separators and case sensitivity differ between the three runners.
   test:
-    runs-on: ubuntu-latest
+    name: node ${{ matrix.node }} on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
-        node: ["18", "20", "22"]
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        node: ["18", "20", "22", "24"]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -20,10 +25,44 @@ jobs:
           node-version: ${{ matrix.node }}
       - run: npm install
       - run: npm test
+
+  # npm ships bundled with node, so the matrix above only ever exercises one npm per
+  # node. This pins npm explicitly to catch packaging problems (the "files" field, the
+  # bin shim) that only show up on another npm major.
+  test-npm:
+    name: npm ${{ matrix.npm }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        npm: ["9", "10", "11"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - run: npm install -g npm@${{ matrix.npm }}
+      - run: npm --version
+      - run: npm install
+      - run: npm test
+      # Pack and install the tarball, so the published layout is what gets tested,
+      # not the working tree.
+      - run: npm pack
+      - run: npm install -g ./eslint-plugin-odoo-*.tgz
+      - run: eslint-odoo --help
+
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - run: npm install
       - run: npm run lint
 
   publish:
-    needs: test
+    needs: [test, test-npm, lint]
     if: startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-latest
     permissions:
