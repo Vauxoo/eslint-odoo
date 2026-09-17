@@ -1,0 +1,8 @@
+- id: eslint-odoo
+  name: ESLint rules for Odoo JavaScript
+  description: Detect Odoo JS defects that fail silently, such as indexing a many2one of a record
+  entry: eslint-odoo
+  language: node
+  types_or: ["javascript"]
+  files: /static/src/.*\.js$
+  require_serial: false

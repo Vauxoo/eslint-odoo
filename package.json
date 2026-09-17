@@ -1,0 +1,43 @@
+{
+  "name": "eslint-plugin-odoo",
+  "version": "0.1.0",
+  "description": "ESLint rules for Odoo JavaScript, including migration defects that fail silently",
+  "keywords": [
+    "eslint",
+    "eslintplugin",
+    "eslint-plugin",
+    "odoo",
+    "owl"
+  ],
+  "homepage": "https://github.com/Vauxoo/eslint-odoo",
+  "bugs": "https://github.com/Vauxoo/eslint-odoo/issues",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Vauxoo/eslint-odoo.git"
+  },
+  "license": "LGPL-3.0-or-later",
+  "author": "Vauxoo",
+  "main": "lib/index.js",
+  "files": [
+    "lib",
+    "bin",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "test": "node --test tests/rules/*.test.js",
+    "lint": "eslint lib tests"
+  },
+  "peerDependencies": {
+    "eslint": ">=9.0.0"
+  },
+  "devDependencies": {
+    "eslint": "^9.0.0"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "bin": {
+    "eslint-odoo": "bin/eslint-odoo.js"
+  }
+}
